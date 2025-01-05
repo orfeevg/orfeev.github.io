@@ -77,6 +77,14 @@
         if ('pictureInPictureEnabled' in document) {
             player.tech().el().disablePictureInPicture = true;
         }
+
+        // Блокировка автоматического PiP при переходе на другую вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Если пользователь перешёл на другую вкладку, приостанавливаем видео
+                player.pause();
+            }
+        });
     </script>
 </body>
 </html>
