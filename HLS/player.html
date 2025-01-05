@@ -21,13 +21,17 @@
             background: #000;
         }
     </style>
+    <!-- Подключаем библиотеку Plyr -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 </head>
 <body>
     <!-- Видеоэлемент -->
-    <video id="videoPlayer" controls playsinline></video>
+    <video id="videoPlayer" playsinline></video>
 
     <!-- Подключаем библиотеку hls.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Подключаем библиотеку Plyr -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // Инициализация HLS
         const videoPlayer = document.getElementById('videoPlayer');
@@ -54,10 +58,9 @@
         const player = new Plyr('#videoPlayer', {
             controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
             disablePictureInPicture: true, // Отключаем PiP
-            hideControls: true, // Скрываем нативные элементы управления
+            hideControls: false, // Показываем кастомные элементы управления
         });
 
-        // Блокировка контекстного меню (чтобы запретить PiP через правую кнопку мыши)
         videoPlayer.addEventListener('contextmenu', (event) => {
             event.preventDefault();
         });
@@ -72,6 +75,9 @@
         if ('pictureInPictureEnabled' in document) {
             videoPlayer.disablePictureInPicture = true;
         }
+
+        // Блокировка PiP через отключение нативных элементов управления
+        videoPlayer.removeAttribute('controls');
     </script>
 </body>
 </html>
