@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" controls></video>
+
+    <!-- Подключаем библиотеку hls.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // Проверяем, поддерживает ли браузер HLS natively
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoUrl = 'VSL_whale_in_the_room.m3u8'; // Укажите путь к вашему плейлисту
+
+        if (Hls.isSupported()) {
+            // Если hls.js поддерживается, создаем экземпляр HLS
+            const hls = new Hls();
+            hls.loadSource(videoUrl); // Загружаем плейлист
+            hls.attachMedia(videoPlayer); // Привязываем видеоэлемент
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                // Видео готово к воспроизведению
+                videoPlayer.play();
+            });
+        } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            // Если браузер поддерживает HLS natively (например, Safari на macOS/iOS)
+            videoPlayer.src = videoUrl;
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                videoPlayer.play();
+            });
+        } else {
+            // Если HLS не поддерживается
+            console.error('Ваш браузер не поддерживает HLS.');
+            alert('Ваш браузер не поддерживает воспроизведение HLS-видео.');
+        }
+    </script>
+</body>
+</html>
