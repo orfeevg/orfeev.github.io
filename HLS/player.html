@@ -20,10 +20,24 @@
             max-height: 100%;
             background: #000;
         }
+
+        /* Скрыть кнопку PiP в стандартных элементах управления */
+        video::-webkit-media-controls-picture-in-picture-button {
+            display: none;
+        }
+
+        video::-moz-media-controls-picture-in-picture-button {
+            display: none;
+        }
+
+        video::-ms-media-controls-picture-in-picture-button {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <video id="videoPlayer" controls></video>
+    <!-- Добавляем атрибут disablePictureInPicture -->
+    <video id="videoPlayer" controls disablePictureInPicture></video>
 
     <!-- Подключаем библиотеку hls.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -51,6 +65,18 @@
             // Если HLS не поддерживается
             console.error('Ваш браузер не поддерживает HLS.');
             alert('Ваш браузер не поддерживает воспроизведение HLS-видео.');
+        }
+
+        // Отключаем PiP через JavaScript
+        videoPlayer.addEventListener('enterpictureinpicture', (event) => {
+            event.preventDefault(); // Предотвращаем включение PiP
+            videoPlayer.disablePictureInPicture = true; // Отключаем PiP
+            console.log('PiP заблокирован');
+        });
+
+        // Отключаем кнопку PiP в элементах управления
+        if ('pictureInPictureEnabled' in document) {
+            videoPlayer.disablePictureInPicture = true;
         }
     </script>
 </body>
