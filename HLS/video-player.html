@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <!-- Подключаем Video.js -->
+    <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+        .video-js {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Видеоэлемент -->
+    <video id="videoPlayer" class="video-js" playsinline></video>
+
+    <!-- Подключаем Video.js и hls.js -->
+    <script src="https://vjs.zencdn.net/8.0.4/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // Инициализация Video.js
+        const player = videojs('videoPlayer', {
+            controls: true, // Включаем кастомные элементы управления
+            playbackRates: [0.5, 1, 1.5, 2], // Скорость воспроизведения
+            fluid: true, // Адаптивный размер плеера
+            controlBar: {
+                pictureInPictureToggle: false, // Отключаем кнопку PiP
+            },
+        });
+
+        // Инициализация HLS
+        const videoUrl = 'VSL_whale_in_the_room.m3u8'; // Укажите путь к вашему плейлисту
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(player.tech().el());
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                player.play();
+            });
+        } else if (player.tech().el().canPlayType('application/vnd.apple.mpegurl')) {
+            player.src(videoUrl);
+            player.on('loadedmetadata', () => {
+                player.play();
+            });
+        } else {
+            console.error('Ваш браузер не поддерживает HLS.');
+            alert('Ваш браузер не поддерживает воспроизведение HLS-видео.');
+        }
+
+        // Блокировка PiP через JavaScript
+        player.tech().on('enterpictureinpicture', (event) => {
+            event.preventDefault();
+            player.exitPictureInPicture();
+        });
+
+        // Отключаем PiP, если браузер поддерживает
+        if ('pictureInPictureEnabled' in document) {
+            player.tech().el().disablePictureInPicture = true;
+        }
+
+        // Блокировка автоматического PiP при переходе на другую вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Если пользователь перешёл на другую вкладку, приостанавливаем видео
+                player.pause();
+            }
+        });
+    </script>
+</body>
+</html>
